@@ -131,6 +131,7 @@ $result = $conn->query($sql);
         })
         .then(data => {
             if (data.success) {
+                console.log("New post HTML:", data.html);  // Debug output
                 // Close the modal
                 var modal = bootstrap.Modal.getInstance(document.getElementById('popupModal'));
                 modal.hide();

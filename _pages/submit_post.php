@@ -25,6 +25,8 @@ if ($conn->connect_error) {
 
 // File upload handling
 $uploadDir = '/var/www/html/Photogram/_pages/uploads/';
+$webPath = '/Photogram/_pages/uploads/';
+
 if (!file_exists($uploadDir)) {
     echo json_encode(['success' => false, 'message' => 'Upload directory does not exist. Please create it manually.']);
     exit;
@@ -46,6 +48,7 @@ $description = $_POST['description'];
 $fileType = explode('/', $file['type'])[0]; // 'image' or 'video'
 $fileName = uniqid() . '_' . $file['name'];
 $filePath = $uploadDir . $fileName;
+$webFilePath = $webPath . $fileName;
 
 $phpFileUploadErrors = array(
     0 => 'There is no error, the file uploaded with success',
@@ -68,7 +71,7 @@ if (!move_uploaded_file($file['tmp_name'], $filePath)) {
 // Insert into database
 $sql = "INSERT INTO posts (user_id, description, file_path, file_type) VALUES (?, ?, ?, ?)";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("isss", $_SESSION['id'], $description, $filePath, $fileType);
+$stmt->bind_param("isss", $_SESSION['id'], $description, $webFilePath, $fileType);
 
 if ($stmt->execute()) {
     $post_id = $conn->insert_id;
@@ -79,9 +82,9 @@ if ($stmt->execute()) {
     $html .= "<div class='card-body'>";
     $html .= "<p class='card-text'>" . htmlspecialchars($description) . "</p>";
     if ($fileType == "image") {
-        $html .= "<img src='" . htmlspecialchars($filePath) . "' class='img-fluid' alt='Posted image'>";
+        $html .= "<img src='" . htmlspecialchars($webFilePath) . "' class='img-fluid' alt='Posted image'>";
     } elseif ($fileType == "video") {
-        $html .= "<video controls class='w-100'><source src='" . htmlspecialchars($filePath) . "' type='video/mp4'></video>";
+        $html .= "<video controls class='w-100'><source src='" . htmlspecialchars($webFilePath) . "' type='video/mp4'></video>";
     }
     $html .= "<p class='text-muted mt-2'>Posted on " . $created_at . "</p>";
     $html .= "</div></div>";
