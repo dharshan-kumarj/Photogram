@@ -39,7 +39,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         echo "Registration successful!";
     } catch(PDOException $e) {
-        die("ERROR: Could not execute $sql. " . $e->getMessage());
+        if ($e->getCode() == '23000') {
+            // Check if it's a duplicate username error
+            if (strpos($e->getMessage(), 'Duplicate entry') !== false && strpos($e->getMessage(), 'username') !== false) {
+                // Display an alert image for duplicate username
+                echo '<p>Username already exists. Please choose a different username.</p>';
+            } else {
+                // Handle other integrity constraint violations
+                echo "An error occurred. Please try again.";
+            }
+        } else {
+            // Handle other database errors
+            echo "ERROR: Could not execute $sql. " . $e->getMessage();
+        }
     }
 }
 
