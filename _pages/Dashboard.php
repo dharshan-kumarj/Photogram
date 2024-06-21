@@ -18,8 +18,8 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Fetch posts
-$sql = "SELECT * FROM posts ORDER BY created_at DESC";
+// Fetch posts with usernames
+$sql = "SELECT posts.*, users.username FROM posts JOIN users ON posts.user_id = users.id ORDER BY posts.created_at DESC";
 $result = $conn->query($sql);
 ?>
 
@@ -44,28 +44,50 @@ $result = $conn->query($sql);
             align-items: center;
             justify-content: center;
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+        .card-img-top {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .card-text {
+            height: 4.5em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
         }
     </style>
 </head>
 <body>
     <div class="container mt-5">
-        <h1>Welcome to the Dashboard, <?php echo htmlspecialchars($_SESSION["username"]); ?>!</h1>
+        <h1 class="mb-4">Welcome to the Dashboard, <?php echo htmlspecialchars($_SESSION["username"]); ?>!</h1>
         
         <!-- Display posts -->
-        <div id="posts-container" class="mt-4">
+        <div id="posts-container" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             <?php
             if ($result->num_rows > 0) {
                 while($row = $result->fetch_assoc()) {
-                    echo "<div class='card mb-3'>";
+                    echo "<div class='col'>";
+                    echo "<div class='card h-100'>";
+                    echo "<div class='card-header'>";
+                    echo "<strong>" . htmlspecialchars($row["username"]) . "</strong>";
+                    echo "</div>";
+                    if ($row["file_type"] == "image") {
+                        echo "<img src='" . htmlspecialchars($row["file_path"]) . "' class='card-img-top' alt='Posted image'>";
+                    } elseif ($row["file_type"] == "video") {
+                        echo "<video controls class='card-img-top'><source src='" . htmlspecialchars($row["file_path"]) . "' type='video/mp4'></video>";
+                    }
                     echo "<div class='card-body'>";
                     echo "<p class='card-text'>" . htmlspecialchars($row["description"]) . "</p>";
-                    if ($row["file_type"] == "image") {
-                        echo "<img src='" . htmlspecialchars($row["file_path"]) . "' class='img-fluid' alt='Posted image'>";
-                    } elseif ($row["file_type"] == "video") {
-                        echo "<video controls class='w-100'><source src='" . htmlspecialchars($row["file_path"]) . "' type='video/mp4'></video>";
-                    }
-                    echo "<p class='text-muted mt-2'>Posted on " . $row["created_at"] . "</p>";
-                    echo "</div></div>";
+                    echo "</div>";
+                    echo "<div class='card-footer'>";
+                    echo "<small class='text-muted'>Posted on " . $row["created_at"] . "</small>";
+                    echo "</div>";
+                    echo "</div>";
+                    echo "</div>";
                 }
             } else {
                 echo "<p>No posts yet.</p>";
@@ -121,7 +143,7 @@ $result = $conn->query($sql);
         })
         .then(response => response.text())
         .then(text => {
-            console.log("Raw response:", text);  // This will log the raw response
+            console.log("Raw response:", text);
             try {
                 return JSON.parse(text);
             } catch (e) {
@@ -131,7 +153,7 @@ $result = $conn->query($sql);
         })
         .then(data => {
             if (data.success) {
-                console.log("New post HTML:", data.html);  // Debug output
+                console.log("New post HTML:", data.html);
                 // Close the modal
                 var modal = bootstrap.Modal.getInstance(document.getElementById('popupModal'));
                 modal.hide();

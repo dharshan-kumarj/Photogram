@@ -76,18 +76,27 @@ $stmt->bind_param("isss", $_SESSION['id'], $description, $webFilePath, $fileType
 if ($stmt->execute()) {
     $post_id = $conn->insert_id;
     $created_at = date("Y-m-d H:i:s");
+    $username = htmlspecialchars($_SESSION["username"]);
     
     // Prepare HTML for the new post
-    $html = "<div class='card mb-3'>";
+    $html = "<div class='col'>";
+    $html .= "<div class='card h-100'>";
+    $html .= "<div class='card-header'>";
+    $html .= "<strong>" . $username . "</strong>";
+    $html .= "</div>";
+    if ($fileType == "image") {
+        $html .= "<img src='" . htmlspecialchars($webFilePath) . "' class='card-img-top' alt='Posted image'>";
+    } elseif ($fileType == "video") {
+        $html .= "<video controls class='card-img-top'><source src='" . htmlspecialchars($webFilePath) . "' type='video/mp4'></video>";
+    }
     $html .= "<div class='card-body'>";
     $html .= "<p class='card-text'>" . htmlspecialchars($description) . "</p>";
-    if ($fileType == "image") {
-        $html .= "<img src='" . htmlspecialchars($webFilePath) . "' class='img-fluid' alt='Posted image'>";
-    } elseif ($fileType == "video") {
-        $html .= "<video controls class='w-100'><source src='" . htmlspecialchars($webFilePath) . "' type='video/mp4'></video>";
-    }
-    $html .= "<p class='text-muted mt-2'>Posted on " . $created_at . "</p>";
-    $html .= "</div></div>";
+    $html .= "</div>";
+    $html .= "<div class='card-footer'>";
+    $html .= "<small class='text-muted'>Posted on " . $created_at . "</small>";
+    $html .= "</div>";
+    $html .= "</div>";
+    $html .= "</div>";
     
     echo json_encode(['success' => true, 'html' => $html]);
 } else {
