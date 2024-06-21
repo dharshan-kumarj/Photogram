@@ -39,6 +39,21 @@ $result = $conn->query($sql);
     <!-- Font Awesome for icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
+        body {
+            background-color: #000;
+            color: #fff;
+        }
+        .navbar-brand {
+            color: #00ff00 !important;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .navbar-text {
+            color: #00ff00 !important;
+        }
+        .container {
+            margin-top: 2rem;
+        }
         .fab {
             position: fixed;
             bottom: 20px;
@@ -50,8 +65,18 @@ $result = $conn->query($sql);
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 5px rgba(0,255,0,0.3);
             z-index: 1000;
+            background-color: #00ff00;
+            color: #000;
+        }
+        .card {
+            background-color: #222;
+            border: 1px solid #444;
+        }
+        .card-header {
+            background-color: #333;
+            color: #00ff00;
         }
         .card-img-top {
             width: 100%;
@@ -66,12 +91,95 @@ $result = $conn->query($sql);
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
         }
+        .card-footer {
+            background-color: #333;
+        }
+        .btn-outline-primary, .btn-outline-secondary {
+            color: #00ff00;
+            border-color: #00ff00;
+        }
+        .btn-outline-primary:hover, .btn-outline-secondary:hover {
+            background-color: #00ff00;
+            color: #000;
+        }
+        .text-muted {
+            color: #aaa !important;
+        }
+        .comment-section {
+            background-color: #222;
+        }
+        .form-control {
+            background-color: #333;
+            color: #fff;
+            border-color: #444;
+        }
+        .form-control:focus {
+            background-color: #444;
+            color: #fff;
+            border-color: #00ff00;
+            box-shadow: 0 0 0 0.2rem rgba(0, 255, 0, 0.25);
+        }
+        .modal-content {
+            background-color: #222;
+            color: #fff;
+            border: 1px solid #444;
+        }
+        .modal-header, .modal-footer {
+            border-color: #444;
+        }
+        .btn-success {
+            background-color: #00ff00;
+            border-color: #00ff00;
+            color: #000;
+        }
+        .btn-success:hover {
+            background-color: #00cc00;
+            border-color: #00cc00;
+            color: #000;
+        }
+        .card-text {
+    height: auto; /* Remove fixed height */
+    color: #fff; /* Ensure text is white */
+    overflow: visible; /* Allow text to be fully visible */
+    text-overflow: clip;
+    display: block; /* Remove ellipsis effect */
+    -webkit-line-clamp: unset;
+}
+
+.comment-section {
+    background-color: #333; /* Slightly lighter than the card for contrast */
+    color: #fff;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.comment {
+    background-color: #444; /* Even lighter for individual comments */
+    padding: 5px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+}
+
+.comment strong {
+    color: #00ff00; /* Make usernames green for emphasis */
+}
+
+.text-muted {
+    color: #bbb !important; /* Lighter muted text for better visibility */
+}
     </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <h1 class="mb-4">Welcome to the Dashboard, <?php echo htmlspecialchars($_SESSION["username"]); ?>!</h1>
-        
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Photogram</a>
+            <span class="navbar-text">
+                <?php echo htmlspecialchars($_SESSION["username"]); ?>
+            </span>
+        </div>
+    </nav>
+
+    <div class="container">
         <!-- Display posts -->
         <div id="posts-container" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             <?php
@@ -119,33 +227,34 @@ $result = $conn->query($sql);
     </div>
 
     <!-- Floating Action Button -->
-    <button type="button" class="btn btn-primary fab" data-bs-toggle="modal" data-bs-target="#popupModal">
+    <button type="button" class="btn fab" data-bs-toggle="modal" data-bs-target="#popupModal">
         +
     </button>
 
     <!-- Modal Popup -->
     <div class="modal fade" id="popupModal" tabindex="-1" aria-labelledby="popupModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="popupModalLabel">Create a New Post</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header border-0">
+                    <h5 class="modal-title w-100 text-center text-success" id="popupModalLabel">Create Post</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="postForm" enctype="multipart/form-data">
                         <div class="mb-3">
-                            <label for="fileUpload" class="form-label">Upload Image or Video</label>
-                            <input type="file" class="form-control" id="fileUpload" name="file" accept="image/*,video/*">
+                            <label for="fileUpload" class="form-label visually-hidden">Upload Image or Video</label>
+                            <div class="input-group">
+                                <input type="file" class="form-control bg-secondary text-light" id="fileUpload" name="file" accept="image/*,video/*" placeholder="Browse the Image..">
+                            </div>
                         </div>
                         <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Write a description..."></textarea>
+                            <label for="description" class="form-label text-success">Description:</label>
+                            <textarea class="form-control bg-secondary text-light" id="description" name="description" rows="3" placeholder="Add a Description.."></textarea>
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-success" onclick="submitPost()">POST</button>
                         </div>
                     </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="submitPost()">Post</button>
                 </div>
             </div>
         </div>
