@@ -28,21 +28,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     try {
         $stmt = $pdo->prepare($sql);
-        
+
         // Bind parameters
         $stmt->bindParam(':username', $username);
         $stmt->bindParam(':email', $email);
         $stmt->bindParam(':password', $hashed_password);
-        
+
         // Execute the prepared statement
         $stmt->execute();
-        
-        echo "Registration successful!";
+
+        // Redirect to login.php
+        header("Location: ../../_pages/Login.php");
+        exit();
     } catch(PDOException $e) {
         if ($e->getCode() == '23000') {
             // Check if it's a duplicate username error
             if (strpos($e->getMessage(), 'Duplicate entry') !== false && strpos($e->getMessage(), 'username') !== false) {
-                // Display an alert image for duplicate username
+                // Display an alert for duplicate username
                 echo '<p>Username already exists. Please choose a different username.</p>';
             } else {
                 // Handle other integrity constraint violations
