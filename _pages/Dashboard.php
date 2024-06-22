@@ -137,6 +137,15 @@ $result = $conn->query($sql);
             border-color: #00cc00;
             color: #000;
         }
+        .btn-login {
+            background-color: transparent;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+        }
+        .btn-login:hover {
+            background-color: #00ff00;
+            color: #000;
+        }
         .card-text {
     height: auto; /* Remove fixed height */
     color: #fff; /* Ensure text is white */
@@ -173,9 +182,12 @@ $result = $conn->query($sql);
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">Photogram</a>
-            <span class="navbar-text">
-                <?php echo htmlspecialchars($_SESSION["username"]); ?>
+            <span class="navbar-text text-end">
+                <?php echo "Welcome back! ".htmlspecialchars($_SESSION["username"]); ?>
             </span>
+            <div class="">
+                <a href="Login.php" class="btn btn-login">Logout</a>
+            </div>
         </div>
     </nav>
 
